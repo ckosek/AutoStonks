@@ -1,16 +1,31 @@
 #Requires -Version 5.1
 
-# Dynamically locate the AutoStonks-main folder whether OneDrive is present or not
-$OneDriveDocs = "$env:USERPROFILE\OneDrive\Documents\AutoStonks-main"
-$StandardDocs = "$env:USERPROFILE\Documents\AutoStonks-main"
+# Dynamically locate the AutoStonks folder
+# Handles standard Documents, personal OneDrive, and org OneDrive (e.g. "OneDrive - Company")
+$FolderPath = $null
 
-if (Test-Path $OneDriveDocs) {
-    $FolderPath = $OneDriveDocs
-} elseif (Test-Path $StandardDocs) {
-    $FolderPath = $StandardDocs
-} else {
-    Write-Host "ERROR: Could not find the AutoStonks-main folder in Documents or OneDrive\Documents." -ForegroundColor Red
-    Write-Host "Please make sure this script is inside a folder called AutoStonks-main in your Documents." -ForegroundColor Yellow
+$possiblePaths = @(
+    "$env:USERPROFILE\OneDrive\Documents\AutoStonks",
+    "$env:USERPROFILE\Documents\AutoStonks"
+)
+
+# Also search for any "OneDrive - *" variants (work/school accounts)
+Get-ChildItem -Path $env:USERPROFILE -Directory -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -like "OneDrive*" } |
+    ForEach-Object {
+        $possiblePaths += "$($_.FullName)\Documents\AutoStonks"
+    }
+
+foreach ($path in $possiblePaths) {
+    if (Test-Path $path) {
+        $FolderPath = $path
+        break
+    }
+}
+
+if (-not $FolderPath) {
+    Write-Host "ERROR: Could not find the AutoStonks folder." -ForegroundColor Red
+    Write-Host "Please make sure the AutoStonks folder is inside your Documents folder." -ForegroundColor Yellow
     pause
     exit 1
 }
@@ -25,18 +40,18 @@ if (-not (Test-Path $ScriptPath)) {
     exit 1
 }
 
-Write-Host "Found AutoStonks-main folder at: $FolderPath" -ForegroundColor Cyan
+Write-Host "Found AutoStonks folder at: $FolderPath" -ForegroundColor Cyan
 
 function Register-SPXTask {
     param([string]$TaskName, [string]$Time)
 
     Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction SilentlyContinue
 
-    $trigger = New-ScheduledTaskTrigger -Weekly `
+    $trigger  = New-ScheduledTaskTrigger -Weekly `
         -DaysOfWeek Monday,Tuesday,Wednesday,Thursday,Friday `
         -At $Time
 
-    $action = New-ScheduledTaskAction -Execute $PS -Argument $Arg
+    $action   = New-ScheduledTaskAction -Execute $PS -Argument $Arg
 
     $settings = New-ScheduledTaskSettingsSet `
         -StartWhenAvailable `
