@@ -1,19 +1,19 @@
 #Requires -Version 5.1
 
-# Dynamically locate the AutoStonks folder
+# Dynamically locate the AutoStonks-main folder
 # Handles standard Documents, personal OneDrive, org OneDrive with spaces/apostrophes
 $FolderPath = $null
 
 $possiblePaths = @(
-    "$env:USERPROFILE\OneDrive\Documents\AutoStonks",
-    "$env:USERPROFILE\Documents\AutoStonks"
+    "$env:USERPROFILE\OneDrive\Documents\AutoStonks-main",
+    "$env:USERPROFILE\Documents\AutoStonks-main"
 )
 
 # Search for any "OneDrive*" variants (work/school accounts with spaces or special characters)
 Get-ChildItem -Path $env:USERPROFILE -Directory -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -like "OneDrive*" } |
     ForEach-Object {
-        $possiblePaths += "$($_.FullName)\Documents\AutoStonks"
+        $possiblePaths += "$($_.FullName)\Documents\AutoStonks-main"
     }
 
 foreach ($path in $possiblePaths) {
@@ -24,8 +24,8 @@ foreach ($path in $possiblePaths) {
 }
 
 if (-not $FolderPath) {
-    Write-Host "ERROR: Could not find the AutoStonks folder." -ForegroundColor Red
-    Write-Host "Please make sure the AutoStonks folder is inside your Documents folder." -ForegroundColor Yellow
+    Write-Host "ERROR: Could not find the AutoStonks-main folder." -ForegroundColor Red
+    Write-Host "Please make sure the AutoStonks-main folder is inside your Documents folder." -ForegroundColor Yellow
     pause
     exit 1
 }
@@ -40,7 +40,7 @@ if (-not (Test-Path -LiteralPath $ScriptPath)) {
     exit 1
 }
 
-Write-Host "Found AutoStonks folder at: $FolderPath" -ForegroundColor Cyan
+Write-Host "Found AutoStonks-main folder at: $FolderPath" -ForegroundColor Cyan
 
 function Register-SPXTask {
     param([string]$TaskName, [string]$Time)
