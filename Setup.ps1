@@ -1,16 +1,16 @@
 #Requires -Version 5.1
 
-# Dynamically locate the AutoStonks folder whether OneDrive is present or not
-$OneDriveDocs = "$env:USERPROFILE\OneDrive\Documents\AutoStonks"
-$StandardDocs = "$env:USERPROFILE\Documents\AutoStonks"
+# Dynamically locate the AutoStonks-main folder whether OneDrive is present or not
+$OneDriveDocs = "$env:USERPROFILE\OneDrive\Documents\AutoStonks-main"
+$StandardDocs = "$env:USERPROFILE\Documents\AutoStonks-main"
 
 if (Test-Path $OneDriveDocs) {
     $FolderPath = $OneDriveDocs
 } elseif (Test-Path $StandardDocs) {
     $FolderPath = $StandardDocs
 } else {
-    Write-Host "ERROR: Could not find the AutoStonks folder in Documents or OneDrive\Documents." -ForegroundColor Red
-    Write-Host "Please make sure this script is inside a folder called AutoStonks in your Documents." -ForegroundColor Yellow
+    Write-Host "ERROR: Could not find the AutoStonks-main folder in Documents or OneDrive\Documents." -ForegroundColor Red
+    Write-Host "Please make sure this script is inside a folder called AutoStonks-main in your Documents." -ForegroundColor Yellow
     pause
     exit 1
 }
@@ -25,7 +25,7 @@ if (-not (Test-Path $ScriptPath)) {
     exit 1
 }
 
-Write-Host "Found AutoStonks folder at: $FolderPath" -ForegroundColor Cyan
+Write-Host "Found AutoStonks-main folder at: $FolderPath" -ForegroundColor Cyan
 
 function Register-SPXTask {
     param([string]$TaskName, [string]$Time)
