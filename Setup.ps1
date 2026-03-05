@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 
 # Dynamically locate the AutoStonks folder
-# Handles standard Documents, personal OneDrive, and org OneDrive (e.g. "OneDrive - Company")
+# Handles standard Documents, personal OneDrive, org OneDrive with spaces/apostrophes
 $FolderPath = $null
 
 $possiblePaths = @(
@@ -9,7 +9,7 @@ $possiblePaths = @(
     "$env:USERPROFILE\Documents\AutoStonks"
 )
 
-# Also search for any "OneDrive - *" variants (work/school accounts)
+# Search for any "OneDrive*" variants (work/school accounts with spaces or special characters)
 Get-ChildItem -Path $env:USERPROFILE -Directory -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -like "OneDrive*" } |
     ForEach-Object {
@@ -17,7 +17,7 @@ Get-ChildItem -Path $env:USERPROFILE -Directory -ErrorAction SilentlyContinue |
     }
 
 foreach ($path in $possiblePaths) {
-    if (Test-Path $path) {
+    if (Test-Path -LiteralPath $path) {
         $FolderPath = $path
         break
     }
@@ -34,7 +34,7 @@ $ScriptPath = "$FolderPath\Set-SPXWallpaper.ps1"
 $PS         = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
 $Arg        = "-NonInteractive -WindowStyle Hidden -ExecutionPolicy Unrestricted -File " + '"' + $ScriptPath + '"'
 
-if (-not (Test-Path $ScriptPath)) {
+if (-not (Test-Path -LiteralPath $ScriptPath)) {
     Write-Host "ERROR: Could not find Set-SPXWallpaper.ps1 in $FolderPath" -ForegroundColor Red
     pause
     exit 1
