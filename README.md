@@ -4,7 +4,7 @@ No?
 Well too bad I made it anyways!
 ![Alt text](stonks.png)
 
-Sets the Windows desktop wallpaper based on SPX (S&P 500) daily performance.
+Sets the Windows desktop wallpaper based on your stock of choice's daily performance.
     Place this script in Documents\AutoStonks-main\ alongside stonks.png and notstonks.png. The script by default runs at 9:45 AM and 4:15 PM
 
 # Instructions
