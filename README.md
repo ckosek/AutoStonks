@@ -11,8 +11,9 @@ Sets the Windows desktop wallpaper based on SPX (S&P 500) daily performance.
 1. Download the github repo and unzip/drag and place the "AutoStonks-main" Folder in your "Documents" Folder.
 2. Open the unzipped folder under "Documents" and run InstallStonks.bat
 3. Security pop-up will most likely happen. You will have to allow this run (or don't its your life).
-4. Wait
-5. ...
-6. Profit?
+4. Select the stock you want to follow or none for the default S&P500 (Use ^ for indices or check Yahoo finance for the ticker in parentheses.)
+5. Wait
+6. ...
+7. Profit?
 
 ![Alt text](notstonks.png)

@@ -30,19 +30,47 @@ if (-not $FolderPath) {
     exit 1
 }
 
-$ScriptPath = "$FolderPath\Set-SPXWallpaper.ps1"
+$ScriptPath = "$FolderPath\Set-ASWallpaper.ps1"
 $PS         = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
 $Arg        = "-NonInteractive -WindowStyle Hidden -ExecutionPolicy Unrestricted -File " + '"' + $ScriptPath + '"'
 
 if (-not (Test-Path -LiteralPath $ScriptPath)) {
-    Write-Host "ERROR: Could not find Set-SPXWallpaper.ps1 in $FolderPath" -ForegroundColor Red
+    Write-Host "ERROR: Could not find Set-ASWallpaper.ps1 in $FolderPath" -ForegroundColor Red
     pause
     exit 1
 }
 
-Write-Host "Found AutoStonks-main folder at: $FolderPath" -ForegroundColor Cyan
+Write-Host "Found AutoStonks folder at: $FolderPath" -ForegroundColor Cyan
 
-function Register-SPXTask {
+# --- Ticker Configuration ---
+Write-Host ""
+Write-Host "Which stock or index would you like to track?" -ForegroundColor Cyan
+Write-Host "  Examples: NVDA, GME, ^DJI, ^GSPC" -ForegroundColor White
+Write-Host "  NOTE: Indices like S&P 500 or Dow Jones require a caret (^) prefix." -ForegroundColor Yellow
+Write-Host "  E.g. S&P 500 = ^GSPC   |   Dow Jones = ^DJI   |   Nasdaq = ^IXIC" -ForegroundColor Yellow
+Write-Host "  Press ENTER to use the default (^GSPC / S&P 500)." -ForegroundColor White
+Write-Host ""
+$tickerInput = Read-Host "Enter ticker"
+
+$configFile = "$FolderPath\ticker.config"
+
+if ($tickerInput.Trim() -eq "") {
+    # No input — use default, remove any existing config so script uses built-in default
+    if (Test-Path -LiteralPath $configFile) { Remove-Item -LiteralPath $configFile }
+    Write-Host "Using default ticker: ^GSPC (S&P 500)" -ForegroundColor Green
+} else {
+    try {
+        $tickerInput.Trim() | Set-Content -Path $configFile -Encoding UTF8
+        Write-Host "Ticker set to: $($tickerInput.Trim())" -ForegroundColor Green
+        Write-Host "Config saved to: $configFile" -ForegroundColor Gray
+    }
+    catch {
+        Write-Host "ERROR saving ticker config: $_" -ForegroundColor Red
+    }
+}
+
+# --- Register Scheduled Tasks ---
+function Register-AS-Task {
     param([string]$TaskName, [string]$Time)
 
     Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction SilentlyContinue
@@ -69,11 +97,12 @@ function Register-SPXTask {
     Write-Host "Registered: $TaskName at $Time ET Mon-Fri" -ForegroundColor Green
 }
 
-Register-SPXTask -TaskName "SPXWallpaper_MarketOpen"  -Time "9:45AM"
-Register-SPXTask -TaskName "SPXWallpaper_MarketClose" -Time "4:15PM"
+Register-AS-Task -TaskName "AutoStonks_MarketOpen"  -Time "9:45AM"
+Register-AS-Task -TaskName "AutoStonks_MarketClose" -Time "4:15PM"
 
 Write-Host ""
 Write-Host "Setup complete! Tasks will run Mon-Fri at 9:45 AM and 4:15 PM." -ForegroundColor Cyan
-Write-Host "To remove later, run these two lines in PowerShell:" -ForegroundColor Cyan
-Write-Host "Unregister-ScheduledTask -TaskName SPXWallpaper_MarketOpen -Confirm:`$false" -ForegroundColor White
-Write-Host "Unregister-ScheduledTask -TaskName SPXWallpaper_MarketClose -Confirm:`$false" -ForegroundColor White
+Write-Host "To change your ticker, just run InstallStonks.bat again." -ForegroundColor White
+Write-Host "To remove tasks, run these two lines in PowerShell:" -ForegroundColor Cyan
+Write-Host "Unregister-ScheduledTask -TaskName AutoStonks_MarketOpen -Confirm:`$false" -ForegroundColor White
+Write-Host "Unregister-ScheduledTask -TaskName AutoStonks_MarketClose -Confirm:`$false" -ForegroundColor White

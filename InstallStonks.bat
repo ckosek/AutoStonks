@@ -10,11 +10,11 @@ echo.
 powershell -Command "Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted -Force"
 
 :: Unblock the scripts so Windows allows them to run
-powershell -Command "Unblock-File -Path '%~dp0Set-SPXWallpaper.ps1'"
+powershell -Command "Unblock-File -Path '%~dp0Set-ASWallpaper.ps1'"
 powershell -Command "Unblock-File -Path '%~dp0Setup.ps1'"
 
 :: Run the setup script from the same folder as this bat file
-powershell -ExecutionPolicy Unrestricted -File "%~dp0Setup.ps1"
+powershell -ExecutionPolicy Unrestricted -NoProfile -File "%~dp0Setup.ps1"
 
 echo.
 echo ================================================
